@@ -1,0 +1,1 @@
+/home/ikegami/.emacs.d/straight/repos/company-org-roam/company-org-roam.el

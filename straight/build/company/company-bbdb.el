@@ -1,0 +1,1 @@
+/home/ikegami/.emacs.d/straight/repos/company-mode/company-bbdb.el
