@@ -77,6 +77,13 @@
   (spacemacs//ess-bind-keys-for-mode 'ess-julia-mode)
   (spacemacs//ess-bind-repl-keys-for-mode 'ess-julia-mode))
 
+(defun spacemacs/ess-bind-keys-for-stata ()
+  (when ess-assign-key
+    (define-key ess-stata-mode-map ess-assign-key #'ess-insert-assign))
+
+  (spacemacs//ess-bind-keys-for-mode 'ess-stata-mode)
+  (spacemacs//ess-bind-repl-keys-for-mode 'ess-stata-mode))
+
 (defun spacemacs/ess-bind-keys-for-r ()
   (when ess-assign-key
     (define-key ess-r-mode-map ess-assign-key #'ess-insert-assign))
@@ -88,7 +95,9 @@
   (define-key inferior-ess-mode-map (kbd "C-j") #'comint-next-input)
   (define-key inferior-ess-mode-map (kbd "C-k") #'comint-previous-input)
   (when ess-assign-key
-    (define-key inferior-ess-r-mode-map ess-assign-key #'ess-insert-assign))
+    (define-key inferior-ess-r-mode-map ess-assign-key #'ess-insert-assign)
+    (define-key inferior-ess-stata-mode-map ess-assign-key #'ess-insert-assign)
+    )
 
   (spacemacs/declare-prefix-for-mode 'inferior-ess-mode "ms" "repl")
   (spacemacs/declare-prefix-for-mode 'inferior-ess-mode "me" "eval")
