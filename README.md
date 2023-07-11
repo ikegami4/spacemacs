@@ -1,3 +1,7 @@
+The main difference between this forked one and the original one is
+
+to use , s b for ess-eval-buffer for stata-mode
+
 <a name="top" id="fork-destination-box"></a>
 <a href="https://develop.spacemacs.org"><img src="assets/spacemacs-badge.svg" alt="Made with Spacemacs" height="20"></a>
 <a href="https://www.gnu.org/licenses/gpl-3.0.en.html"><img src="assets/gplv3.png" alt="GPLv3 Software" align="right" height="20"></a>
