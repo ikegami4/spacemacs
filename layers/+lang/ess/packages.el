@@ -94,7 +94,8 @@
       (add-hook 'ess-r-mode-hook #'spacemacs//ess-may-setup-r-lsp)
       (add-hook 'inferior-ess-mode-hook
                 'spacemacs//ess-fix-read-only-inferior-ess-mode)
-
+      (with-eval-after-load 'ess-stata-mode
+        (spacemacs/ess-bind-keys-for-stata))
       (with-eval-after-load 'ess-julia
         (spacemacs/ess-bind-keys-for-julia))
       (with-eval-after-load 'ess-r-mode
