@@ -519,13 +519,13 @@ Will work on both org-mode and any mode that accepts plain html."
       "
 Headline^^            Visit entry^^               Filter^^                    Date^^                  Toggle mode^^        View^^             Clock^^        Other^^
 --------^^---------   -----------^^------------   ------^^-----------------   ----^^-------------     -----------^^------  ----^^---------    -----^^------  -----^^-----------
-[_ht_] set status     [_SPC_] in other window     [_ft_] by tag               [_ds_] schedule         [_tf_] follow        [_vd_] day         [_cI_] in      [_gr_] reload
-[_hk_] kill           [_TAB_] & go to location    [_fc_] by category          [_dS_] un-schedule      [_tl_] log           [_vw_] week        [_cO_] out     [_._]  go to today
+[_ht_] set status     [_SPC_] in other window     [_ft_] by tag               [_ds_] schedule         [_tf_] follow        [_vd_] day         [_ci_] in      [_gr_] reload
+[_hk_] kill           [_TAB_] & go to location    [_fc_] by category          [_dS_] un-schedule      [_tl_] log           [_vw_] week        [_co_] out     [_._]  go to today
 [_hr_] refile         [_RET_] & del other windows [_fh_] by top headline      [_dd_] set deadline     [_ta_] archive       [_vt_] fortnight   [_cq_] cancel  [_gd_] go to date
 [_hA_] archive        [_o_]   link                [_fx_] by regexp            [_dD_] remove deadline  [_tr_] clock report  [_vm_] month       [_cj_] jump    ^^
 [_h:_] set tags       ^^                          [_fd_] delete all filters   [_dt_] timestamp        [_ti_] clock issues  [_vy_] year        ^^             ^^
 [_hp_] set priority   ^^                          ^^                          [_+_]  do later         [_td_] diaries       [_vn_] next span   ^^             ^^
-^^                    ^^                          ^^                          [_-_]  do earlier       ^^                   [_vp_] prev span   ^^             ^^
+[_hy_] yesterday      ^^                          ^^                          [_-_]  do earlier       ^^                   [_vp_] prev span   ^^             ^^
 ^^                    ^^                          ^^                          ^^                      ^^                   [_vr_] reset       ^^             ^^
 [_q_] quit
 "
@@ -537,6 +537,7 @@ Headline^^            Visit entry^^               Filter^^                    Da
       ("hp" org-agenda-priority)
       ("hr" org-agenda-refile)
       ("ht" org-agenda-todo)
+      ("hy" org-agenda-todo-yesterday)
 
       ;; Visit entry
       ("SPC" org-agenda-show-and-scroll-up)
@@ -584,9 +585,9 @@ Headline^^            Visit entry^^               Filter^^                    Da
       ("fx" org-agenda-filter-by-regexp)
 
       ;; Clock
-      ("cI" org-agenda-clock-in :exit t)
+      ("ci" org-agenda-clock-in :exit t)
       ("cj" org-agenda-clock-goto :exit t)
-      ("cO" org-agenda-clock-out)
+      ("co" org-agenda-clock-out)
       ("cq" org-agenda-clock-cancel)
 
       ;; Other
