@@ -1,6 +1,6 @@
 ;;; packages.el --- Helm Layer packages File
 ;;
-;; Copyright (c) 2012-2022 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2024 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -26,7 +26,11 @@
     auto-highlight-symbol
     bookmark
     helm
-    helm-ag
+    (helm-ag :location (recipe
+                        :fetcher github
+                        :repo "zozowell/helm-ag"
+                        :branch "further-support-rg"))
+    helm-comint
     helm-descbinds
     (helm-ls-git :toggle (configuration-layer/layer-used-p 'git))
     helm-make
@@ -209,6 +213,11 @@
         (kbd "RET") 'spacemacs/helm-find-files-windows)
       (define-key helm-find-files-map
         (kbd "RET") 'spacemacs/helm-find-files-windows))))
+
+(defun helm/init-helm-comint ()
+  (use-package helm-comint
+    :defer (spacemacs/defer)
+    :after helm))
 
 (defun helm/init-helm-ag ()
   (use-package helm-ag
@@ -438,8 +447,8 @@
       "ss"    'helm-swoop
       "sS"    'spacemacs/helm-swoop-region-or-symbol
       "s C-s" 'helm-multi-swoop-all)
-    (defadvice helm-swoop (before add-evil-jump activate)
-      (evil-set-jump))))
+
+    (evil-add-command-properties 'helm-swoop :jump t)))
 
 (defun helm/init-helm-themes ()
   (use-package helm-themes

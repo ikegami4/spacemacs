@@ -1,6 +1,6 @@
 ;;; funcs.el --- Spacemacs Defaults Layer functions File
 ;;
-;; Copyright (c) 2012-2022 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2024 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -969,6 +969,17 @@ Possible values:
     (defun my-delete-other-windows () (delete-other-windows))
     (setq spacemacs-window-split-delete-function 'my-delete-other-windows)")
 
+(defun spacemacs//window-split-eligible-buffers ()
+  "Return a list of buffers to display automatically when splitting windows.
+
+This excludes ephemeral buffers (those whose names begin with a
+space), unless they are visitin a file, just as `list-buffers' does."
+  (seq-remove
+   (lambda (b)
+     (and (string= (substring (buffer-name b) 0 1) " ")
+          (not (buffer-file-name b))))
+   (buffer-list)))
+
 (defun spacemacs/window-split-grid (&optional purge)
   "Set the layout to a 2x2 grid.
 
@@ -984,7 +995,7 @@ as a means to remove windows, regardless of the value in
         (delete-other-windows))
     (funcall spacemacs-window-split-delete-function))
   (if (spacemacs--window-split-splittable-windows)
-      (let* ((previous-files (buffer-list))
+      (let* ((previous-files (spacemacs//window-split-eligible-buffers))
              (second (split-window-below))
              (third (split-window-right))
              (fourth (split-window second nil 'right)))
@@ -1009,7 +1020,7 @@ as a means to remove windows, regardless of the value in
         (delete-other-windows))
     (funcall spacemacs-window-split-delete-function))
   (if (spacemacs--window-split-splittable-windows)
-      (let* ((previous-files (buffer-list))
+      (let* ((previous-files (spacemacs//window-split-eligible-buffers))
              (second (split-window-right))
              (third (split-window second nil 'right)))
         (set-window-buffer second (or (nth 1 previous-files) "*scratch*"))
@@ -1110,50 +1121,67 @@ Returns a message with the count of killed buffers."
    (format "%d buffer(s) killed."
            (spacemacs/rudekill-matching-buffers regexp internal-too))))
 
-;; advise to prevent server from closing
+;; advise to prevent server from closing when the window manager closes the last
+;; Emacs frame, and `dotspacemacs-persistent-server' is non-nil.
 
 (defvar spacemacs-really-kill-emacs nil
-  "prevent window manager close from closing instance.")
+  "If nil, prevent window manager and \\[save-buffers-kill-emacs] from killing Emacs.
+
+This only has an effect if `dotspacemacs-persistent-server' is non-nil.
+
+This variable should be let-bound to t to actually kill Emacs,
+such as is done by \\[spacemacs/prompt-kill-emacs].")
 
 (defun spacemacs//persistent-server-running-p ()
-  "Requires spacemacs-really-kill-emacs to be toggled and
-dotspacemacs-persistent-server to be t"
+  "Return t if `spacemacs-really-kill-emacs' should prevent killing Emacs."
   (and (fboundp 'server-running-p)
        (server-running-p)
        dotspacemacs-persistent-server))
 
-(defadvice kill-emacs (around spacemacs-really-exit activate)
-  "Only kill emacs if a prefix is set"
-  (if (and (not spacemacs-really-kill-emacs)
-           (spacemacs//persistent-server-running-p))
-      (spacemacs/frame-killer)
-    ad-do-it))
+(define-advice kill-emacs (:around (f &rest args) spacemacs-really-exit)
+  "Do not actually kill Emacs if a persistent server is running.
 
-(defadvice save-buffers-kill-emacs (around spacemacs-really-exit activate)
-  "Only kill emacs if a prefix is set"
+If `dotspacemacs-persistent-server' is non-nil and the Emacs
+server is running, just kill the current frame instead of the
+Emacs server.
+
+Setting `spacemacs-really-kill-emacs' non-nil overrides this advice."
   (if (and (not spacemacs-really-kill-emacs)
            (spacemacs//persistent-server-running-p))
       (spacemacs/frame-killer)
-    ad-do-it))
+    (apply f args)))
+
+(define-advice save-buffers-kill-emacs (:around (f &rest args) spacemacs-really-exit)
+  "Do not actually kill Emacs if a persistent server is running.
+
+If `dotspacemacs-persistent-server' is non-nil and the Emacs
+server is running, just kill the current frame instead of the
+Emacs server.
+
+Setting `spacemacs-really-kill-emacs' non-nil overrides this advice."
+  (if (and (not spacemacs-really-kill-emacs)
+           (spacemacs//persistent-server-running-p))
+      (spacemacs/frame-killer)
+    (apply f args)))
 
 (defun spacemacs/save-buffers-kill-emacs ()
   "Save all changed buffers and exit Spacemacs"
   (interactive)
-  (setq spacemacs-really-kill-emacs t)
-  (save-buffers-kill-emacs))
+  (let ((spacemacs-really-kill-emacs t))
+    (save-buffers-kill-emacs)))
 
 (defun spacemacs/kill-emacs ()
   "Lose all changes and exit Spacemacs"
   (interactive)
-  (setq spacemacs-really-kill-emacs t)
-  (kill-emacs))
+  (let ((spacemacs-really-kill-emacs t))
+    (kill-emacs)))
 
 (defun spacemacs/prompt-kill-emacs ()
   "Prompt to save changed buffers and exit Spacemacs"
   (interactive)
-  (setq spacemacs-really-kill-emacs t)
   (save-some-buffers nil t)
-  (kill-emacs))
+  (let ((spacemacs-really-kill-emacs t))
+    (kill-emacs)))
 
 (defun spacemacs/frame-killer ()
   "Kill server buffer and hide the main Emacs window"

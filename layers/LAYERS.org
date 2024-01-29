@@ -456,8 +456,8 @@ Features:
 - UI optimized for speed: quick keystrokes for common actions.
 - Very extendable and customizable.
 - Integration with Helm.
-- Maildir summary using [[https://github.com/agpchil/mu4e-maildirs-extension][mu4e-mailidirs-extension]]
-- Notifications using [[https://github.com/iqbalansari/mu4e-alert][mu4e-alert]]
+- Maildir summary.
+- Notifications using [[https://github.com/iqbalansari/mu4e-alert][mu4e-alert]].
 
 ** Notmuch
 [[file:+email/notmuch/README.org][+email/notmuch/README.org]]
@@ -1881,7 +1881,7 @@ Features:
 - Eldoc-mode
 - Documentation at point
 - Auto complete
-- Flycheck with either tslint or eslint
+- Flycheck with either eslint or tslint
 - Jump to definition, Jump to type definition
 - Find occurrences (Imenu-mode)
 - Rename symbol
@@ -2329,6 +2329,7 @@ Features:
 - Syntax highlighting
 - Integration of the =SML Repl= into Emacs
 - Basic completion of SML forms via =sml-electric-space=
+- Basic buffer formatting with =smlfmt=
 
 **** Swift
 [[file:+lang/swift/README.org][+lang/swift/README.org]]
@@ -2754,7 +2755,7 @@ Features:
 ** Bm
 [[file:+tools/bm/README.org][+tools/bm/README.org]]
 
-[[https://github.com/joodland/bm/blob/master/README.md][BM]] provides visible, buffer local, bookmarks and the ability to jump forward and backward to the next bookmark.
+[[https://github.com/joodland/bm][bm]] provides visible, buffer local, bookmarks and the ability to jump forward and backward to the next bookmark.
 
 Features:
 - Auto remove bookmark after jump to it by =bm-next= or =bm-previous=
@@ -2765,7 +2766,7 @@ Features:
 - Annotate bookmarks.
 - Different wrapping modes.
 - Different bookmarks styles, line-only, fringe-only or both.
-- Persistent bookmarks.
+- Persistent bookmarks (buffer local), also in non-file buffers (info) and indirect buffers.
 - List bookmarks (in all buffers) in a separate buffer.
 - Cycle through bookmarks in all open buffers.
 
@@ -2964,6 +2965,14 @@ Different language servers may support the language server protocol to varying d
 and they may also provide extensions; check the language server's website for
 details.
 ~M-x lsp-describe-session~ in a LSP buffer to list capabilities of the server.
+
+Warning:
+This layers main purpose is to turn Spacemacs into an IDE it will therefore also
+load the =syntax-checking= and =auto-completion= layers, this may activate additional packages
+like =flycheck= and =company= in your buffer.
+
+So if you want to use this layer but only part of the IDE features
+expect to do some manual configuring in your dotfile.
 
 Features:
 - Cross references (definitions, references, document symbol, workspace symbol

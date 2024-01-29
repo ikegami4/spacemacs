@@ -1,6 +1,6 @@
 ;;; packages.el --- Spacemacs Navigation Layer packages File
 ;;
-;; Copyright (c) 2012-2022 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2024 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -188,15 +188,14 @@
       (kbd "C-k") 'doc-view-kill-proc
       (kbd "C-u") 'doc-view-scroll-down-or-previous-page)
     ;; fixed a weird issue where toggling display does not
-    ;; swtich to text mode
-    (defadvice doc-view-toggle-display
-        (around spacemacs/doc-view-toggle-display activate)
+    ;; switch to text mode
+    (define-advice doc-view-toggle-display (:around (f &rest args) spacemacs/doc-view-toggle-display)
       (if (eq major-mode 'doc-view-mode)
           (progn
-            ad-do-it
+            (apply f args)
             (text-mode)
             (doc-view-minor-mode))
-        ad-do-it))))
+        (apply f args)))))
 
 (defun spacemacs-navigation/init-view ()
   (use-package view
@@ -356,8 +355,13 @@
 
 (defun spacemacs-navigation/init-restart-emacs ()
   (use-package restart-emacs
-    :after files
+    :defer (spacemacs/defer)
     :init
+    (with-eval-after-load 'files
+      ;; unbind `restart-emacs' and declare it from package for ticket #15505
+      (fmakunbound 'restart-emacs)
+      (autoload 'restart-emacs "restart-emacs"))
+
     (spacemacs/set-leader-keys
       "qd" 'spacemacs/restart-emacs-debug-init
       "qD" 'spacemacs/restart-stock-emacs-with-packages
@@ -421,7 +425,7 @@
   (use-package winum
     :config
     (setq winum-auto-assign-0-to-minibuffer nil
-          winum-auto-setup-mode-line nil
+          winum-auto-setup-mode-line (eq (spacemacs/get-mode-line-theme-name) 'vanilla)
           winum-ignored-buffers '(" *LV*" " *which-key*"))
     (spacemacs/set-leader-keys
       "`" 'winum-select-window-by-number
