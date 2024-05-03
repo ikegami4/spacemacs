@@ -735,7 +735,7 @@ Returns:
   "Retrieve the file path of the current buffer,
 including line and column number.
 
-This function respects the the `column-number-indicator-zero-based' variable.
+This function respects the `column-number-indicator-zero-based' variable.
 
 Returns:
   - A string containing the file path in case of success.
@@ -1227,11 +1227,6 @@ useful to use full screen on macOS without animations."
              (if (eq (frame-parameter nil 'maximized) 'maximized)
                  'maximized)
            'fullboth)))))
-
-(defun spacemacs/safe-revert-buffer ()
-  "Prompt before reverting the file."
-  (interactive)
-  (revert-buffer nil nil))
 
 (defun spacemacs/safe-erase-buffer ()
   "Prompt before erasing the content of the file."
