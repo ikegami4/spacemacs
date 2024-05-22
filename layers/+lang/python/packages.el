@@ -178,7 +178,11 @@
   (use-package importmagic
     :defer t
     :init
-    (add-hook 'python-mode-hook 'importmagic-mode)
+    (add-hook 'python-mode-hook
+              #'(lambda ()
+                  ;; skip temp buffer which bufer-name begin with space
+                  (unless (eq ?\s (string-to-char (buffer-name)))
+                    (importmagic-mode))))
     (spacemacs|diminish importmagic-mode " ⓘ" " [i]")
     (spacemacs/set-leader-keys-for-major-mode 'python-mode
       "rf" 'importmagic-fix-symbol-at-point)))
@@ -400,6 +404,8 @@
       "sF" 'spacemacs/python-shell-send-defun-switch
       "sf" 'spacemacs/python-shell-send-defun
       "si" 'spacemacs/python-start-or-switch-repl
+      "sn" 'spacemacs/python-shell-restart
+      "sN" 'spacemacs/python-shell-restart-switch
       "sR" 'spacemacs/python-shell-send-region-switch
       "sr" 'spacemacs/python-shell-send-region
       "sl" 'spacemacs/python-shell-send-line
