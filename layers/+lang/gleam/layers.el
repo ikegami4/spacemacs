@@ -1,8 +1,8 @@
-;;; config.el --- Emacs Lisp Layer configuration File for Spacemacs
+;;; layers.el --- Gleam layer layers file for Spacemacs.
 ;;
 ;; Copyright (c) 2012-2024 Sylvain Benner & Contributors
 ;;
-;; Author: Sylvain Benner <sylvain.benner@gmail.com>
+;; Author: Qynn Schwaab <qynn@riseup.net>
 ;; URL: https://github.com/syl20bnr/spacemacs
 ;;
 ;; This file is not part of GNU Emacs.
@@ -21,19 +21,6 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-;; Dumper
-
-(defun emacs-lisp/pre-dump ()
-  (spacemacs/dump-modes '(emacs-lisp-mode)))
-
-;; Variables
-
-(spacemacs|define-jump-handlers emacs-lisp-mode)
-(spacemacs|define-jump-handlers lisp-interaction-mode)
-(spacemacs|define-jump-handlers inferior-emacs-lisp-mode)
-
-(defvar emacs-lisp-hide-namespace-prefix nil
-  "If non-nil, hide namespace prefixes using nameless-mode.")
-
-(defvar emacs-lisp-format-on-save t
-  "If non-nil, format elisp buffers before saving.")
+(configuration-layer/declare-layer-dependencies
+  (append '(tree-sitter)
+         (if (and (boundp 'gleam-enable-lsp) gleam-enable-lsp) '(lsp) '())))
