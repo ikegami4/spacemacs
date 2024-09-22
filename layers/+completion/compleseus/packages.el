@@ -204,6 +204,8 @@
     ;; Configure other variables and modes in the :config section,
     ;; after lazily loading the package.
     :config
+    (add-to-list 'consult-buffer-sources 'compleseus--source-window-buffers)
+    (add-to-list 'consult-buffer-sources 'compleseus--source-workspace-buffers)
 
     ;; disable automatic preview by default,
     ;; selectively enable it for some prompts below.
@@ -464,9 +466,9 @@
     :init
     (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
     (spacemacs/set-leader-keys
-      "rl" 'vertico-repeat-last
+      "rl" 'vertico-repeat-previous
       "rL" 'vertico-repeat-select
-      "sl" 'vertico-repeat-last
+      "sl" 'vertico-repeat-previous
       "sL" 'vertico-repeat-select)))
 
 (defun compleseus/post-init-grep ()
