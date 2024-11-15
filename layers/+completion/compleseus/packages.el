@@ -34,12 +34,15 @@
     (helm-make :location (recipe :fetcher github
                                  :repo "myrgy/helm-make"
                                  :branch "add_emacs_completion"))
+    (nerd-icons-completion :toggle compleseus-use-nerd-icons)
     orderless
     persp-mode
     (selectrum :toggle (eq compleseus-engine 'selectrum))
     (vertico
      :toggle (eq compleseus-engine 'vertico)
      :location elpa)
+    (vertico-posframe :toggle (and (eq compleseus-engine 'vertico)
+                                  compleseus-use-vertico-posframe))
     (grep :location built-in)
     wgrep))
 
@@ -170,6 +173,7 @@
       "hm" #'consult-man
       "jm" #'consult-mark
       "jM" #'consult-global-mark
+
       "sb" #'spacemacs/consult-line-multi
       "sB" #'spacemacs/consult-line-multi-symbol
       "ss" #'spacemacs/consult-line
@@ -237,7 +241,7 @@
     ;; Optionally configure a function which returns the project root directory.
     (setq consult-project-root-function
           (lambda ()
-            (when-let (project (project-current))
+            (when-let* ((project (project-current)))
               (car (project-root project)))))
 
     (dolist (command '(consult-org-agenda
@@ -461,6 +465,20 @@
       "sl" 'vertico-repeat-previous
       "sL" 'vertico-repeat-select)))
 
+(defun compleseus/init-vertico-posframe ()
+  (use-package vertico-posframe
+    :after vertico
+    :init
+    (setq vertico-posframe-poshandler 'posframe-poshandler-frame-center)
+    (setq vertico-posframe-width (round (* 0.618 (frame-width))))
+    (setq vertico-posframe-height (round (* 0.618 (frame-height))))
+    (setq vertico-posframe-parameters
+          '((internal-border-width . 2)
+            (left-fringe . 4)
+            (right-fringe . 4)
+            (undecorated . nil)))
+    (vertico-posframe-mode 1)))
+
 (defun compleseus/post-init-grep ()
   (spacemacs/set-leader-keys-for-major-mode 'grep-mode
     "w" 'spacemacs/compleseus-grep-change-to-wgrep-mode
@@ -497,3 +515,11 @@
     (setq
      spacemacs--persp-display-buffers-func 'spacemacs/compleseus-switch-to-buffer
      spacemacs--persp-display-perspectives-func 'spacemacs/compleseus-spacemacs-layout-layouts)))
+
+(defun compleseus/init-nerd-icons-completion ()
+  (use-package nerd-icons-completion
+    :defer t
+    :after marginalia
+    :hook (marginalia-mode . nerd-icons-completion-marginalia-setup)
+    :init
+    (nerd-icons-completion-mode)))
