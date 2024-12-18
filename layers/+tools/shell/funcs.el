@@ -173,8 +173,6 @@ is achieved by adding the relevant text properties."
             'spacemacs//eshell-auto-end nil t)
   (add-hook 'evil-hybrid-state-entry-hook
             'spacemacs//eshell-auto-end nil t)
-  (when (configuration-layer/package-used-p 'semantic)
-    (semantic-mode -1))
   ;; This is an eshell alias
   (defun eshell/clear ()
     (let ((inhibit-read-only t))
@@ -231,6 +229,25 @@ is achieved by adding the relevant text properties."
     "H" #'spacemacs/ivy-eshell-history)
   (define-key eshell-mode-map (kbd "M-l") #'spacemacs/ivy-eshell-history)
   (define-key eshell-mode-map (kbd "<tab>") #'spacemacs/pcomplete-std-complete))
+
+(defun spacemacs/consult-eshell-history ()
+  "Correctly revert to insert state after selection."
+  (interactive)
+  (consult-history)
+  (evil-insert-state))
+
+(defun spacemacs/consult-shell-history ()
+  "Correctly revert to insert state after selection."
+  (interactive)
+  (consult-history)
+  (evil-insert-state))
+
+(defun spacemacs/init-consult-eshell ()
+  "Initialize consult-eshell."
+  (spacemacs/set-leader-keys-for-major-mode 'eshell-mode
+    "H" 'spacemacs/consult-eshell-history)
+  (define-key eshell-mode-map
+              (kbd "M-l") 'spacemacs/consult-eshell-history))
 
 (defun term-send-tab ()
   "Send tab in term mode."

@@ -271,20 +271,9 @@ location of \".venv\" file, then relative to pyvenv-workon-home()."
                       (setq-local pyvenv-activate virtualenv-abs-path))
                      (t (pyvenv-workon virtualenv-path-in-file)
                         (setq-local pyvenv-workon virtualenv-path-in-file))))))))
+
 
 ;; Tests
-
-(defun spacemacs//python-imenu-create-index-use-semantic-maybe ()
-  "Use semantic if the layer is enabled."
-  (setq imenu-create-index-function 'spacemacs/python-imenu-create-index))
-
-;; fix for issue #2569 (https://github.com/syl20bnr/spacemacs/issues/2569) and
-;; Emacs 24.5 and older. use `semantic-create-imenu-index' only when
-;; `semantic-mode' is enabled, otherwise use `python-imenu-create-index'
-(defun spacemacs/python-imenu-create-index ()
-  (if (bound-and-true-p semantic-mode)
-      (semantic-create-imenu-index)
-    (python-imenu-create-index)))
 
 (defun spacemacs//python-get-main-testrunner ()
   "Get the main test runner."
@@ -406,6 +395,12 @@ to be called for each testrunner. "
 (defun spacemacs//bind-python-formatter-keys ()
   "Bind the python formatter keys.
 Bind formatter to '==' for LSP and '='for all other backends."
+  (when (and (eq python-formatter 'lsp)
+             (eq python-lsp-server 'pyright))
+    (display-warning
+     '(spacemacs python)
+     "Configuration error: `python-formatter' is `lsp', but `python-lsp-server' is `pyright', which does not support formatting."
+     :error))
   (spacemacs/set-leader-keys-for-major-mode 'python-mode
     (if (eq python-backend 'lsp)
         "=="
@@ -420,6 +415,23 @@ Bind formatter to '==' for LSP and '='for all other backends."
     ('black (blacken-buffer))
     ('lsp (lsp-format-buffer))
     (code (message "Unknown formatter: %S" code))))
+
+(defun spacemacs//python-lsp-set-up-format-on-save ()
+  (when (and python-format-on-save
+             (eq python-formatter 'lsp)
+             (eq python-lsp-server 'pylsp))
+    (add-hook
+     'python-mode-hook
+     'spacemacs//python-lsp-set-up-format-on-save-local)))
+
+(defun spacemacs//python-lsp-set-up-format-on-save-local ()
+  (add-hook 'before-save-hook 'spacemacs//python-lsp-format-on-save nil t))
+
+(defun spacemacs//python-lsp-format-on-save ()
+  (when (and python-format-on-save
+             (eq python-formatter 'lsp)
+             (eq python-lsp-server 'pylsp))
+    (lsp-format-buffer)))
 
 
 ;; REPL
@@ -531,7 +543,7 @@ If region is not active then send line."
   "Start and/or switch to the REPL."
   (interactive)
   (if-let* ((shell-process (or (python-shell-get-process)
-                              (call-interactively #'run-python))))
+                               (call-interactively #'run-python))))
       (progn
         (pop-to-buffer (process-buffer shell-process))
         (evil-insert-state))

@@ -159,7 +159,11 @@
 
 (defun emacs-lisp/init-elisp-def ()
   (use-package elisp-def
-    :defer t))
+    :defer t
+    :init
+    (dolist (mode '(emacs-lisp-mode lisp-interaction-mode))
+      (let ((jumpl (intern (format "spacemacs-jump-handlers-%S" mode))))
+        (add-to-list jumpl 'elisp-def)))))
 
 (defun emacs-lisp/init-elisp-demos ()
   (use-package elisp-demos
@@ -179,11 +183,7 @@
     (spacemacs|require-when-dumping 'elisp-slime-nav)
     (add-hook 'emacs-lisp-mode-hook 'elisp-slime-nav-mode)
     (dolist (mode '(emacs-lisp-mode lisp-interaction-mode))
-      (spacemacs/declare-prefix-for-mode mode "mg" "find-symbol")
-      (spacemacs/set-leader-keys-for-major-mode mode
-        "gb" 'xref-pop-marker-stack)
       (spacemacs/declare-prefix-for-mode mode "mh" "help")
-
       ;; Load better help mode if helpful is installed
       (if (configuration-layer/layer-used-p 'helpful)
           (spacemacs/set-leader-keys-for-major-mode mode
@@ -191,12 +191,10 @@
         (spacemacs/set-leader-keys-for-major-mode mode
           "hh" 'elisp-slime-nav-describe-elisp-thing-at-point))
       (let ((jumpl (intern (format "spacemacs-jump-handlers-%S" mode))))
-        (add-to-list jumpl 'elisp-def)
         (add-to-list jumpl 'elisp-slime-nav-find-elisp-thing-at-point)))
     :config (spacemacs|hide-lighter elisp-slime-nav-mode)))
 
 (defun emacs-lisp/init-emacs-lisp ()
-
   ;; Format buffers automatically if required
   (spacemacs//make-elisp-buffers-format-on-save-maybe)
 
@@ -206,6 +204,7 @@
     (spacemacs/declare-prefix-for-mode mode "me" "eval")
     (spacemacs/declare-prefix-for-mode mode "mt" "tests")
     (spacemacs/declare-prefix-for-mode mode "m=" "format")
+    (spacemacs/declare-prefix-for-mode mode "mg" "find-symbol")
     (spacemacs/set-leader-keys-for-major-mode mode
       "cc" 'emacs-lisp-byte-compile
       "e$" 'lisp-state-eval-sexp-end-of-line
@@ -215,6 +214,7 @@
       "er" 'eval-region
       "ef" 'eval-defun
       "el" 'lisp-state-eval-sexp-end-of-line
+      "gb" 'xref-go-back
       "gG" 'spacemacs/nav-find-elisp-thing-at-point-other-window
       ","  'lisp-state-toggle-lisp-state
       "==" 'spacemacs/indent-region-or-buffer

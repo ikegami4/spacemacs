@@ -74,7 +74,6 @@
     (spacemacs/set-leader-keys-for-major-mode 'python-mode
       "hh" 'anaconda-mode-show-doc
       "ga" 'anaconda-mode-find-assignments
-      "gb" 'xref-pop-marker-stack
       "gu" 'anaconda-mode-find-references)
     ;; new anaconda-mode (2018-06-03) removed `anaconda-view-mode-map' in
     ;; favor of xref. Eventually we need to remove this part.
@@ -128,7 +127,6 @@
   (use-package blacken
     :defer t
     :init
-    (spacemacs//bind-python-formatter-keys)
     (when (and python-format-on-save
                (eq 'black python-formatter))
       (add-hook 'python-mode-hook 'blacken-mode))
@@ -374,6 +372,8 @@
     (spacemacs/register-repl 'python
                              'spacemacs/python-start-or-switch-repl "python")
     (spacemacs//bind-python-repl-keys)
+    (spacemacs//bind-python-formatter-keys)
+    (spacemacs//python-lsp-set-up-format-on-save)
     (add-hook 'python-mode-local-vars-hook 'spacemacs//python-setup-backend)
     (add-hook 'python-mode-hook 'spacemacs//python-default)
     :config
@@ -395,6 +395,7 @@
       "cc" 'spacemacs/python-execute-file
       "cC" 'spacemacs/python-execute-file-focus
       "db" 'spacemacs/python-toggle-breakpoint
+      "gb" 'xref-go-back
       "ri" 'spacemacs/python-remove-unused-imports
       "sB" 'spacemacs/python-shell-send-buffer-switch
       "sb" 'spacemacs/python-shell-send-buffer
@@ -453,18 +454,7 @@
   (when (configuration-layer/package-used-p 'anaconda-mode)
     (add-hook 'python-mode-hook
               'spacemacs//disable-semantic-idle-summary-mode t))
-  (spacemacs/add-to-hook 'python-mode-hook
-                         '(semantic-mode
-                           spacemacs//python-imenu-create-index-use-semantic-maybe))
-  (define-advice semantic-python-get-system-include-path
-      (:around (f &rest args) semantic-python-skip-error-advice)
-    "Don't cause error when Semantic cannot retrieve include
-paths for Python then prevent the buffer to be switched. This
-issue might be fixed in Emacs 25. Until then, we need it here to
-fix this issue."
-    (condition-case-unless-debug nil
-        (apply f args)
-      (error nil))))
+  (add-hook 'python-mode-hook 'semantic-mode))
 
 (defun python/pre-init-smartparens ()
   (spacemacs|use-package-add-hook smartparens
@@ -489,7 +479,6 @@ fix this issue."
   (use-package yapfify
     :defer t
     :init
-    (spacemacs//bind-python-formatter-keys)
     (when (and python-format-on-save
                (eq 'yapf python-formatter))
       (add-hook 'python-mode-hook 'yapf-mode))
