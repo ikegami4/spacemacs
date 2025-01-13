@@ -157,13 +157,9 @@ ROOT-DIR should be the directory path for the environment, `nil' for clean up."
             (equal python-shell-interpreter spacemacs--python-shell-interpreter-origin))
     (if-let* ((default-directory root-dir))
         (if-let* ((ipython (cl-find-if 'spacemacs/pyenv-executable-find
-                                       '("ipython3" "ipython")))
-                  (version (replace-regexp-in-string
-                            "\\(\\.dev\\)?[\r\n|\n]$" ""
-                            (shell-command-to-string (format "\"%s\" --version" ipython)))))
+                                       '("ipython3" "ipython"))))
             (setq-local python-shell-interpreter ipython
-                        python-shell-interpreter-args
-                        (concat "-i" (unless (version< version "5") " --simple-prompt")))
+                        python-shell-interpreter-args "-i --simple-prompt")
           ;; else try python3 or python
           (setq-local python-shell-interpreter
                       (or (cl-find-if 'spacemacs/pyenv-executable-find
@@ -206,14 +202,21 @@ ROOT-DIR should be the path for the environemnt, `nil' for clean up"
                      ((spacemacs/pyenv-executable-find "python3.10") "breakpoint()")
                      ((spacemacs/pyenv-executable-find "python3.11") "breakpoint()")
                      (t "import pdb; pdb.set_trace()")))
+        (prev-line (save-excursion
+                     (and (zerop (forward-line -1))
+                          (thing-at-point 'line))))
         (line (thing-at-point 'line)))
-    (if (and line (string-match trace line))
-        (kill-whole-line)
-      (progn
-        (back-to-indentation)
-        (insert trace)
-        (insert "\n")
-        (python-indent-line)))))
+    (cond ((and line (string-search trace line))
+           (kill-whole-line)
+           (back-to-indentation))
+          ((and prev-line (string-search trace prev-line))
+           (forward-line -1)
+           (kill-whole-line)
+           (back-to-indentation))
+          (t
+           (back-to-indentation)
+           (insert trace ?\n)
+           (python-indent-line)))))
 
 ;; from https://www.snip2code.com/Snippet/127022/Emacs-auto-remove-unused-import-statemen
 (defun spacemacs/python-remove-unused-imports ()
@@ -395,12 +398,6 @@ to be called for each testrunner. "
 (defun spacemacs//bind-python-formatter-keys ()
   "Bind the python formatter keys.
 Bind formatter to '==' for LSP and '='for all other backends."
-  (when (and (eq python-formatter 'lsp)
-             (eq python-lsp-server 'pyright))
-    (display-warning
-     '(spacemacs python)
-     "Configuration error: `python-formatter' is `lsp', but `python-lsp-server' is `pyright', which does not support formatting."
-     :error))
   (spacemacs/set-leader-keys-for-major-mode 'python-mode
     (if (eq python-backend 'lsp)
         "=="
@@ -418,8 +415,7 @@ Bind formatter to '==' for LSP and '='for all other backends."
 
 (defun spacemacs//python-lsp-set-up-format-on-save ()
   (when (and python-format-on-save
-             (eq python-formatter 'lsp)
-             (eq python-lsp-server 'pylsp))
+             (eq python-formatter 'lsp))
     (add-hook
      'python-mode-hook
      'spacemacs//python-lsp-set-up-format-on-save-local)))
@@ -428,10 +424,16 @@ Bind formatter to '==' for LSP and '='for all other backends."
   (add-hook 'before-save-hook 'spacemacs//python-lsp-format-on-save nil t))
 
 (defun spacemacs//python-lsp-format-on-save ()
-  (when (and python-format-on-save
-             (eq python-formatter 'lsp)
-             (eq python-lsp-server 'pylsp))
-    (lsp-format-buffer)))
+  (condition-case err
+      (when (and python-format-on-save
+                 (eq python-formatter 'lsp))
+        (lsp-format-buffer))
+    (lsp-capability-not-supported
+     (display-warning
+       '(spacemacs python)
+       "Configuration error: `python-formatter' is `lsp', no active workspace supports textDocument/formatting"
+       :error))))
+
 
 
 ;; REPL

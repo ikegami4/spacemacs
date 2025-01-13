@@ -207,11 +207,13 @@
      ;; emacs is evil and decrees that vertical shall henceforth be horizontal
      ediff-split-window-function 'split-window-horizontally
      ediff-merge-split-window-function 'split-window-horizontally)
+    :config
     ;; show org ediffs unfolded
-    (require 'outline)
-    (add-hook 'ediff-prepare-buffer-hook #'show-all)
+    (add-hook 'ediff-prepare-buffer-hook 'spacemacs//ediff-buffer-outline-show-all)
     ;; restore window layout when done
-    (add-hook 'ediff-quit-hook #'winner-undo)))
+    (add-hook 'ediff-quit-hook #'winner-undo)
+    (when (fboundp 'spacemacs//ediff-delete-temp-files)
+      (add-hook 'kill-emacs-hook #'spacemacs//ediff-delete-temp-files))))
 
 (defun spacemacs-defaults/init-eldoc ()
   (use-package eldoc
@@ -413,9 +415,30 @@
           savehist-additional-variables '(search-ring
                                           regexp-search-ring
                                           extended-command-history
-                                          kill-ring)
-          savehist-autosave-interval 60)
-    (savehist-mode t)))
+                                          kill-ring
+                                          kmacro-ring
+                                          log-edit-comment-ring)
+          ;; We use an idle timer instead, as saving can cause
+          ;; noticable delays with large histories.
+          savehist-autosave-interval nil)
+    (savehist-mode t)
+    (define-advice savehist-save
+        (:around (orig &rest args) spacemacs//kill-ring-no-properties)
+      "Text properties can blow up the savehist file and lead to
+excessive pauses when saving."
+      (if (memq 'kill-ring savehist-additional-variables)
+          (let ((kill-ring (mapcar #'substring-no-properties
+                                   (cl-remove-if-not #'stringp kill-ring))))
+            (apply orig args))
+        (apply orig args)))
+    (when (and (boundp 'spacemacs--savehist-idle-timer)
+               (timerp spacemacs--savehist-idle-timer))
+      (cancel-timer spacemacs--savehist-idle-timer))
+    (setq spacemacs--savehist-idle-timer
+          (run-with-idle-timer
+           spacemacs-savehist-autosave-idle-interval
+           spacemacs-savehist-autosave-idle-interval
+           #'savehist-autosave))))
 
 (defun spacemacs-defaults/init-saveplace ()
   (use-package saveplace
@@ -473,10 +496,6 @@
   (use-package whitespace
     :defer t
     :init
-    (when dotspacemacs-show-trailing-whitespace
-      (set-face-attribute
-       'trailing-whitespace nil
-       :background (face-attribute 'font-lock-comment-face :foreground)))
     (add-hook 'prog-mode-hook 'spacemacs//trailing-whitespace)
     (add-hook 'text-mode-hook 'spacemacs//trailing-whitespace)
 
