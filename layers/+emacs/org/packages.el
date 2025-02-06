@@ -41,11 +41,7 @@
     (org-vcard :toggle org-enable-org-contacts-support)
     (org-brain :toggle org-enable-org-brain-support)
     (org-expiry :location built-in)
-    ;; temporarily point org-journal to dalanicolai fork until dalanicolai's
-    ;; PR's https://github.com/bastibe/org-journal/pulls get merged
-    (org-journal
-     :location (recipe :fetcher github :repo "dalanicolai/org-journal")
-     :toggle org-enable-org-journal-support)
+    (org-journal :toggle org-enable-org-journal-support)
     org-download
     (org-jira :toggle org-enable-jira-support)
     org-mime
@@ -1049,12 +1045,20 @@ Headline^^            Visit entry^^               Filter^^                    Da
           org-appear-autoemphasis t
           org-appear-autosubmarkers t)
     :config
-    (when (and (eq org-appear-trigger 'manual)
-               (memq dotspacemacs-editing-style '(vim hybrid)))
-      (add-hook 'org-mode-hook
-                (lambda ()
-                  (add-hook 'evil-insert-state-entry-hook #'org-appear-manual-start nil t)
-                  (add-hook 'evil-insert-state-exit-hook #'org-appear-manual-stop nil t))))))
+    (when (eq org-appear-trigger 'manual)
+      (when (eq dotspacemacs-editing-style 'vim)
+        (add-hook 'org-appear-mode-hook
+                  (lambda ()
+                    (add-hook 'evil-insert-state-entry-hook #'org-appear-manual-start nil t)
+                    (add-hook 'evil-insert-state-exit-hook #'org-appear-manual-stop nil t)
+                    )))
+
+      (when (eq dotspacemacs-editing-style 'hybrid)
+        (add-hook 'org-appear-mode-hook
+                  (lambda ()
+                    (add-hook 'evil-hybrid-state-entry-hook #'org-appear-manual-start nil t)
+                    (add-hook 'evil-hybrid-state-exit-hook #'org-appear-manual-stop nil t)
+                    ))))))
 
 (defun org/init-org-transclusion ()
   (use-package org-transclusion
