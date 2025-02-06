@@ -849,6 +849,7 @@ Features:
   - occur-mode
   - package-menu
   - page-break-lines
+  - proced
   - process-menu
   - quickrun
   - recentf
@@ -891,8 +892,8 @@ Features:
 - Support for sorting (press ~s~) via [[https://gitlab.com/xuhdev/dired-quick-sort][=dired-quick-sort=]]
 - Support for [[https://github.com/PythonNut/evil-easymotion][=evil-easymotion=]] if the editing style is =vim= or =hybrid=.
 - Support for cycling between multi line block styles via [[https://github.com/IvanMalison/multi-line/][=multi-line=]].
-- Support for editing strings inplace via [[https://github.com/magnars/string-edit.el][=string-edit=]]
-- Presents undo history as a tree via [[https://gitlab.com/tsc25/undo-tree/-/blob/master/undo-tree.el][=undo-tree=]]
+- Support for editing strings inplace via [[https://github.com/magnars/string-edit.el][=string-edit=]].
+- Presents undo history as a tree via [[https://github.com/casouri/vundo][=vundo=]] or [[https://gitlab.com/tsc25/undo-tree/-/blob/master/undo-tree.el][=undo-tree=]].
 
 ** Spacemacs-editing-visual
 [[file:+spacemacs/spacemacs-editing-visual/README.org][+spacemacs/spacemacs-editing-visual/README.org]]
