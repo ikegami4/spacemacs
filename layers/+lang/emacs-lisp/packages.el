@@ -223,8 +223,6 @@
 (defun emacs-lisp/init-macrostep ()
   (use-package macrostep
     :defer t
-    :mode (("\\*.el\\'" . emacs-lisp-mode)
-           ("Cask\\'" . emacs-lisp-mode))
     :init
     (evil-define-key 'normal macrostep-keymap "q" 'macrostep-collapse-all)
     (spacemacs|define-transient-state macrostep
@@ -312,11 +310,17 @@
 
 (defun emacs-lisp/init-flycheck-package ()
   (use-package flycheck-package
-    :hook (emacs-lisp-mode . flycheck-package-setup)))
+    :defer t
+    :init
+    (spacemacs|add-transient-hook emacs-lisp-mode-hook
+      emacs-lisp//flycheck-package-setup)))
 
 (defun emacs-lisp/init-flycheck-elsa ()
   (use-package flycheck-elsa
-    :hook (emacs-lisp-mode . flycheck-elsa-setup)))
+    :defer t
+    :init
+    (spacemacs|add-transient-hook emacs-lisp-mode-hook
+      emacs-lisp//flycheck-elsa-setup)))
 
 (defun emacs-lisp/post-init-ggtags ()
   (add-hook 'emacs-lisp-mode-local-vars-hook #'spacemacs/ggtags-mode-enable))

@@ -123,7 +123,7 @@ the final step of executing code in `emacs-startup-hook'.")
     (let ((feature (nth 0 args))
           (filename (nth 1 args))
           (noerror (nth 2 args)))
-      (when-let* (((and filename load-hints))
+      (when-let* (((not filename))
                   (name (symbol-name feature))
                   (path (spacemacs//lookup-load-hints name)))
         (setq filename (expand-file-name name path)))
@@ -289,20 +289,25 @@ the final step of executing code in `emacs-startup-hook'.")
   (dotspacemacs/maybe-install-dotfile))
 
 (defun spacemacs//setup-ido-vertical-mode ()
-  "Setup `ido-vertical-mode'."
-  (require 'ido-vertical-mode)
-  (ido-vertical-mode t)
-  (add-hook
-   'ido-setup-hook
-   ;; think about hacking directly `ido-vertical-mode' source in libs instead.
-   (defun spacemacs//ido-vertical-natural-navigation ()
-     ;; more natural navigation keys: up, down to change current item
-     ;; left to go up dir
-     ;; right to open the selected item
-     (define-key ido-completion-map (kbd "<up>") 'ido-prev-match)
-     (define-key ido-completion-map (kbd "<down>") 'ido-next-match)
-     (define-key ido-completion-map (kbd "<left>") 'ido-delete-backward-updir)
-     (define-key ido-completion-map (kbd "<right>") 'ido-exit-minibuffer))))
+  "Setup `ido-vertical-mode' for the setup wizard.
+
+Does nothing until `ido' is loaded, since most Spacemacs invocations
+don't actually need ido (it is only used for the dotfile setup wizard
+`dotspacemacs/maybe-install-dotfile')."
+  (with-eval-after-load 'ido
+    (require 'ido-vertical-mode)
+    (ido-vertical-mode t)
+    (add-hook
+     'ido-setup-hook
+     ;; think about hacking directly `ido-vertical-mode' source in libs instead.
+     (defun spacemacs//ido-vertical-natural-navigation ()
+       ;; more natural navigation keys: up, down to change current item
+       ;; left to go up dir
+       ;; right to open the selected item
+       (define-key ido-completion-map (kbd "<up>") 'ido-prev-match)
+       (define-key ido-completion-map (kbd "<down>") 'ido-next-match)
+       (define-key ido-completion-map (kbd "<left>") 'ido-delete-backward-updir)
+       (define-key ido-completion-map (kbd "<right>") 'ido-exit-minibuffer)))))
 
 (defun display-startup-echo-area-message ()
   "Change the default welcome message of minibuffer to another one."
