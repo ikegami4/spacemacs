@@ -54,7 +54,6 @@
 (require 'core-use-package-ext)
 (require 'core-spacebind)
 (require 'core-compilation)
-(require 'core-dumper)
 
 (defvar spacemacs-post-user-config-hook nil
   "Hook run after dotspacemacs/user-config")
@@ -84,14 +83,9 @@ the final step of executing code in `emacs-startup-hook'.")
            (package-desc-name pkg-desc) pkg-dir))))))
 
 (defun spacemacs//lookup-load-hints (file)
-  "Findout the `load-hints' items for the file."
-  (if-let* ((load-hints)
-            ((not (member (substring file 0 1) '("/" "~")))))
-      (seq-some
-       (lambda (row)
-         (when (member file (cdr row))                 ; prefix match
-           (car row)))
-       load-hints)))
+  "Findout the `load-hints' item for the FILE."
+  (unless (file-name-absolute-p file)
+    (car-safe (seq-find (lambda (row) (member file (cdr row))) load-hints))))
 
 (defun spacemacs//activate-load-hints ()
   "Enable the `load-hints' support for Spacemacs."
@@ -202,8 +196,7 @@ the final step of executing code in `emacs-startup-hook'.")
     (unless (frame-parameter nil 'fullscreen)
       (toggle-frame-maximized))
     (add-to-list 'default-frame-alist '(fullscreen . maximized)))
-  (spacemacs|unless-dumping
-    (dotspacemacs|call-func dotspacemacs/user-init "Calling dotfile user init..."))
+  (dotspacemacs|call-func dotspacemacs/user-init "Calling dotfile user init...")
   ;; Given the loading process of Spacemacs we have no choice but to set the
   ;; custom settings twice:
   ;; - once at the very beginning of startup (here)
@@ -244,17 +237,6 @@ the final step of executing code in `emacs-startup-hook'.")
   (spacemacs/load-default-theme)
   ;; font
   (spacemacs|do-after-display-system-init
-    ;; If you are thinking to remove this call to `message', think twice. You'll
-    ;; break the life of several Spacemacser using Emacs in daemon mode. Without
-    ;; this, their chosen font will not be set on the *first* instance of
-    ;; emacsclient, at least if different than their system font. You don't
-    ;; believe me? Go ahead, try it. After you'll have notice that this was true,
-    ;; increase the counter bellow so next people will give it more confidence.
-    ;; Counter = 1
-    (let ((init-file-debug)) ;; without this font size is ignored in daemon
-      (when (daemonp)
-        (setq init-file-debug t))
-      (spacemacs-buffer/message "Setting the font..."))
     (unless (spacemacs/set-default-font dotspacemacs-default-font)
       (spacemacs-buffer/warning
        "Cannot find any of the specified fonts (%s)! Font settings may not be correct."
@@ -327,8 +309,7 @@ defer call using `spacemacs-post-user-config-hook'."
      spacemacs-compiled-files)))
 
 (defun spacemacs/setup-startup-hook ()
-  "Add post init processing.
-Note: the hooked function is not executed when in dumped mode."
+  "Add post init processing."
   (add-hook
    'emacs-startup-hook
    (defun spacemacs/startup-hook ()
