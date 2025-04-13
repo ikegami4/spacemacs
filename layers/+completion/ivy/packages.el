@@ -1,6 +1,6 @@
 ;;; packages.el --- Ivy Layer packages File
 ;;
-;; Copyright (c) 2012-2024 Sylvain Benner & Contributors
+;; Copyright (c) 2012-2025 Sylvain Benner & Contributors
 ;;
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; URL: https://github.com/syl20bnr/spacemacs
@@ -160,11 +160,6 @@
 
     (dolist (command '(counsel-org-goto counsel-imenu spacemacs/counsel-jump-in-buffer))
       (evil-add-command-properties command :jump t))
-
-    (when (or (eq 'vim dotspacemacs-editing-style)
-              (and (eq 'hybrid dotspacemacs-editing-style)
-                   hybrid-style-enable-hjkl-bindings))
-      (define-key counsel-find-file-map (kbd "C-h") 'counsel-up-directory))
 
     (define-key read-expression-map (kbd "C-r") 'counsel-minibuffer-history)
     (spacemacs//counsel-search-add-extra-bindings counsel-ag-map)
