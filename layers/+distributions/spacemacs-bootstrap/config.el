@@ -1,4 +1,4 @@
-;;; config.el --- Spacemacs Bootstrap Layer configuration File
+;;; config.el --- Spacemacs Bootstrap Layer configuration File  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (c) 2012-2025 Sylvain Benner & Contributors
 ;;
@@ -91,7 +91,7 @@ Otherwise, in visual state `u' downcases visually selected text.")
                                  ("hybrid" "SkyBlue2" (bar . 2))
                                  ("replace" "chocolate" (hbar . 2))
                                  ("evilified" "LightGoldenrod3" box)
-                                 ("visual" "gray" (hbar . 2))
+                                 ("visual" "SteelBlue3" (hbar . 2))
                                  ("motion" "plum3" box)
                                  ("lisp" "HotPink1" box)
                                  ("iedit" "firebrick1" box)

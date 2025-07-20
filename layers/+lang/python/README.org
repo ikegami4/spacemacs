@@ -31,7 +31,8 @@
   - [[#importmagic][Importmagic]]
   - [[#pyvenv-pyenv-pipenv-and-poetry][Pyvenv, pyenv, pipenv and poetry]]
 - [[#management-of-python-versions-and-virtual-environments][Management of Python versions and virtual environments]]
-  - [[#manage-virtual-environments-with-pyvenv][Manage virtual environments with pyvenv]]
+  - [[#manage-virtual-environments-with-pet-mode][Manage virtual environments with pet-mode]]
+  - [[#manage-virtual-environments-with-pyvenv-legacy-inactively-maintained][Manage virtual environments with pyvenv (legacy, inactively maintained)]]
     - [[#automatic-activation-of-local-virtual-environment][Automatic activation of local virtual environment]]
   - [[#manage-multiple-python-versions-with-pyenv][Manage multiple Python versions with pyenv]]
     - [[#automatic-activation-of-local-pyenv-version][Automatic activation of local pyenv version]]
@@ -356,7 +357,27 @@ This will allow you to use [[https://github.com/pwalsh/pipenv.el][pipenv]] bindi
 You can add to the other two lists analogously.
 
 * Management of Python versions and virtual environments
-** Manage virtual environments with pyvenv
+** Manage virtual environments with pet-mode
+To enable the [[https://github.com/wyuenho/emacs-pet][pet-mode]], set the variable ~python-virtualenv-management~ to
+~pet~, for example:
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(
+    (python :variables python-virtualenv-management 'pet)))
+#+END_SRC
+
+In general virtual environments are automatically used when active using
+~pet-mode~, following additional packages are high recommended to enable full
+~pet-mode~ features:
+
+| Package   | Description                                   |
+|-----------+-----------------------------------------------|
+| ~dasel~   | an application to query data structures [[https://github.com/TomWright/dasel][dasel]] |
+| ~sqlite3~ | a lightwait and serverless database [[https://www.sqlite.org/][sqlite]]    |
+
+Independent of this you can activate and switch virtual environments manually with below tools.
+
+** Manage virtual environments with pyvenv (legacy, inactively maintained)
 A virtual environment provides isolation of your Python package versions. For a
 general overview see [[http://docs.python-guide.org/en/latest/dev/virtualenvs/][this site]]. [[http://virtualenvwrapper.readthedocs.io/en/latest/index.html][Virtualenvwrapper]] which is also explained in the
 previous link, is a program which manages your virtual environments in a central

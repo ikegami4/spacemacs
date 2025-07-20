@@ -1,4 +1,4 @@
-;;; config.el --- Python Layer Configuration File for Spacemacs
+;;; config.el --- Python Layer Configuration File for Spacemacs  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (c) 2012-2025 Sylvain Benner & Contributors
 ;;
@@ -88,6 +88,9 @@ Possible values are `on-visit', `on-project-switch' or `nil'.")
 (defvar python-sort-imports-on-save nil
   "If non-nil, automatically sort imports on save.")
 (put 'python-sort-imports-on-save 'safe-local-variable 'booleanp)
+
+(defvar python-virtualenv-management 'pyvenv
+  "The management backend for virtualenv, Possible value is `pet' or `pyvenv'")
 
 (defvar python-enable-importmagic nil
   "If non-nil, enable the importmagic feature.")

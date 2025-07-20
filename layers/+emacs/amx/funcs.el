@@ -1,4 +1,4 @@
-;;; packages.el --- smex Layer packages File for Spacemacs
+;;; funcs.el --- Amx Layer functions File for Spacemacs  -*- lexical-binding: nil; -*-
 ;;
 ;; Copyright (c) 2012-2025 Sylvain Benner & Contributors
 ;;
@@ -21,19 +21,14 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-(setq smex-packages '(smex))
+(defun spacemacs/amx ()
+  "Execute amx with a better prompt."
+  (interactive)
+  (let ((amx-prompt-string "Emacs commands: "))
+    (amx)))
 
-(defun smex/init-smex ()
-  (use-package smex
-    :defer t
-    :init
-    (setq-default smex-history-length 32
-                  smex-save-file (concat spacemacs-cache-directory
-                                         ".smex-items"))
-    ;; define the key binding at the very end in order to allow the user
-    ;; to overwrite any key binding
-    (add-hook 'emacs-startup-hook
-              (lambda () (spacemacs/set-leader-keys
-                           dotspacemacs-emacs-command-key 'spacemacs/smex)))
-    (spacemacs/set-leader-keys "m:" 'spacemacs/smex-major-mode-commands)
-    (global-set-key (kbd "M-x") 'spacemacs/smex)))
+(defun spacemacs/amx-major-mode-commands ()
+  "Reexecute amx with major mode commands only."
+  (interactive)
+  (let ((amx-prompt-string (format "%s commands: " major-mode)))
+    (amx-major-mode-commands)))
