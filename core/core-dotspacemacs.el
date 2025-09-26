@@ -114,7 +114,7 @@ state and should only be used for testing."
   'boolean
   'spacemacs-dotspacemacs-init)
 
-(spacemacs|defc dotspacemacs-verify-spacelpa-archives nil
+(spacemacs|defc dotspacemacs-verify-spacelpa-archives t
   "If non-nil then verify the signature for downloaded Spacelpa archives."
   'boolean
   'spacemacs-dotspacemacs-init)
@@ -250,7 +250,10 @@ whenever you start Emacs."
   'boolean
   'spacemacs-dotspacemacs-init)
 
-(spacemacs|defc dotspacemacs-configuration-layers '(emacs-lisp)
+(spacemacs|defc dotspacemacs-configuration-layers '(emacs-lisp
+                                                    helm
+                                                    multiple-cursors
+                                                    treemacs)
   "List of configuration layers to load."
   '(repeat (choice symbol (cons symbol sexp)))
   'spacemacs-dotspacemacs-layers)
@@ -731,7 +734,7 @@ visiting README.org files of Spacemacs."
   'boolean
   'spacemacs-dotspacemacs-init)
 
-(spacemacs|defc dotspacemacs-new-empty-buffer-major-mode nil
+(spacemacs|defc dotspacemacs-new-empty-buffer-major-mode 'text-mode
   "Set the major mode for a new empty buffer."
   'symbol
   'spacemacs-dotspacemacs-init)
@@ -1145,11 +1148,13 @@ error recovery."
                    "[[file:%s::dotspacemacs/layers][Show in File]]\n")
            (dotspacemacs/location)))
   ;; protect global values of these variables
-  (let (dotspacemacs-additional-packages
+  (dlet (dotspacemacs-additional-packages
         dotspacemacs-configuration-layer-path
         dotspacemacs-configuration-layers
         dotspacemacs-excluded-packages
         dotspacemacs-install-packages
+        ;; `passed-tests' and `total-tests' are expected to be dynamically bound
+        ;; when `spacemacs//test-list' is called.
         (passed-tests 0)
         (total-tests 0))
     (load (dotspacemacs/location))
@@ -1180,11 +1185,11 @@ error recovery."
                      `(,symbol ,(let ((v (symbol-value symbol)))
                                   (if (or (symbolp v) (listp v))
                                       `',v v))))
-                   (dotspacemacs/get-variable-list))
-         (passed-tests 0) (total-tests 0))
-     (setq dotspacemacs-filepath fpath)
-     (load dotspacemacs-filepath)
-     ,@body))
+                   (dotspacemacs/get-variable-list)))
+     (dlet ((passed-tests 0) (total-tests 0))
+       (setq dotspacemacs-filepath fpath)
+       (load dotspacemacs-filepath)
+       ,@body)))
 
 (defun dotspacemacs//test-dotspacemacs/init ()
   "Tests for `dotspacemacs/init'"
