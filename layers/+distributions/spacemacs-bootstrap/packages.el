@@ -43,7 +43,8 @@
     (spacemacs-theme :location built-in)
     (which-key-posframe :step pre :toggle (and (consp dotspacemacs-which-key-position)
                                                (eq (car dotspacemacs-which-key-position) 'posframe)))
-    dash))
+    dash
+    (transient :location elpa)))
 
 ;; bootstrap packages
 
@@ -155,7 +156,10 @@
     (advice-add 'evil-refresh-cursor :around #'spacemacs/not-in-pdf-view-mode))
 
   (when vim-style-enable-undo-region
-    (define-key evil-visual-state-map (kbd "u") 'undo))
+    (define-key evil-visual-state-map (kbd "u")
+                (if (eq dotspacemacs-undo-system 'undo-fu)
+                    'undo
+                  'evil-undo)))
 
   (evil-ex-define-cmd "enew" 'spacemacs/new-empty-buffer)
 
@@ -686,3 +690,15 @@ Press \\[which-key-toggle-persistent] to hide."
           (intern (format "posframe-poshandler-frame-%s"
                           (cdr dotspacemacs-which-key-position))))
     (which-key-posframe-mode)))
+
+(defun spacemacs-bootstrap/init-transient ()
+  (use-package transient
+    :defer t
+    :init
+    (setq-default transient-history-file (expand-file-name "transient/history.el"
+                                                           spacemacs-cache-directory))
+    (setq-default transient-levels-file (expand-file-name "transient/levels.el"
+                                                          spacemacs-cache-directory))
+    ;; Values are the users saved preferences so they should persist.
+    (setq-default transient-values-file (expand-file-name "transient/values.el"
+                                                          dotspacemacs-directory))))
