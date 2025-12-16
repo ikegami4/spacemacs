@@ -351,9 +351,6 @@ pressing `<leader> m`. Set it to `nil` to disable it."
   'string
   'spacemacs-dotspacemacs-init)
 
-(define-obsolete-variable-alias 'dotspacemacs-command-key
-  'dotspacemacs-emacs-command-key "2016-01-09 (58e524)")
-
 (spacemacs|defc dotspacemacs-distinguish-gui-tab nil
   "If non nil, distinguish C-i and tab in the GUI version of Emacs."
   'boolean
@@ -954,6 +951,8 @@ Called with `C-u C-u' skips `dotspacemacs/user-config' _and_ preliminary tests."
                                      "function has been skipped)."))
                   (dotspacemacs|call-func dotspacemacs/user-config
                                           "Calling dotfile user config...")
+                  (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
+                                          "Calling dotfile Emacs custom settings...")
                   (run-hooks 'spacemacs-post-user-config-hook)
                   (message "Done.")))
             (switch-to-buffer-other-window dotspacemacs-test-results-buffer)
