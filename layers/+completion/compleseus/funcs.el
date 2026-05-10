@@ -39,13 +39,16 @@ non-nil."
                     consult-buffer-sources)))
 
 (defun spacemacs/initial-search-input (&optional force-input)
-  "Get initial input from region for consult search functions. If region is not
-active and `force-input' is not nil, `thing-at-point' will be returned."
-  (if (region-active-p)
+  "Get initial input from region for consult search functions.
+
+If region is not active and FORCE-INPUT is non-nil, return the symbol at point.
+If FORCE-INPUT is nil or there is no symbol at point,
+return the empty string."
+  (if (use-region-p)
       (buffer-substring-no-properties
        (region-beginning) (region-end))
-    (if force-input (thing-at-point 'symbol t) ""))
-  )
+    (or (and force-input (thing-at-point 'symbol t))
+        "")))
 
 (defun spacemacs/compleseus-search (force-initial-input initial-directory)
   (let* ((initial-input (regexp-quote
@@ -179,20 +182,6 @@ to act on with `embark-act-all', and move to the next candidate."
   "Go backward N candidates and preview"
   (interactive)
   (vertico-previous (or n 1))
-  (spacemacs/embark-preview))
-
-;; selectrum
-
-(defun spacemacs/selectrum-next-candidate-preview (&optional n)
-  "Go forward N candidates and preview"
-  (interactive)
-  (selectrum-next-candidate (or n 1))
-  (spacemacs/embark-preview))
-
-(defun spacemacs/selectrum-previous-candidate-preview (&optional n)
-  "Go backward N candidates and preview"
-  (interactive)
-  (selectrum-previous-candidate (or n 1))
   (spacemacs/embark-preview))
 
 ;; which-key integration functions for embark
