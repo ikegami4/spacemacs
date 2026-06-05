@@ -74,7 +74,19 @@
            ("\\.Rd\\'"           . Rd-mode)
            ("\\.[Bb][Uu][Gg]\\'" . ess-bugs-mode)
            ("\\.[Bb][Oo][Gg]\\'" . ess-bugs-mode)
+<<<<<<< HEAD
            ("\\.[Bb][Mm][Dd]\\'" . ess-bugs-mode))
+=======
+           ("\\.[Bb][Mm][Dd]\\'" . ess-bugs-mode)
+
+           ;; ("\\.[Jj][Aa][Gg]\\'" . ess-jags-mode)
+           ;; ("\\.[Jj][Oo][Gg]\\'" . ess-jags-mode)
+           ;; ("\\.[Jj][Mm][Dd]\\'" . ess-jags-mode)
+           ;; I commented out the previous three lines so that I can see whether the following warning will disappper
+           ;; Package ess-jags-d is deprecated
+
+           )
+>>>>>>> f1dd54257d87f6be0fc15a23ed76487d5f5ca50e
     :commands (R stata julia SAS ess-julia-mode)
     :init
     (progn
